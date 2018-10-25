@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            text-align: center;
+        }
+
+        button {
+            margin-top: 10px;
+        }
+
+        h1 {
+            margin-bottom: 0px;
+        }
+
+        textarea {
+            display: inline-block;
+        }
+    </style>
+    <script>
+        function translateNowASAS() {
+            var lines = document.getElementById("codeHere").value.split("\n");
+            console.log(lines);
+            var intConf = false;
+            var curInt = "";
+            var command = "";
+            var newLines = [];
+            for (var i = 0; i < lines.length; i++) {
+                if (!lines[i].includes(")#")) {
+                    newLines.push(lines[i]);
+                    continue;
+                }
+                command = lines[i].substr(lines[i].indexOf(" ") + 1);
+                if (!intConf) {
+                    if (command.includes("interface") || command.includes("line")) {
+                        intConf = true;
+                        curInt = command;
+                        newLines.push("##");
+                    }
+                    else newLines.push("ios_config \"" + command + "\"");
+                }
+                else {
+                    if (command.includes("exit")) {
+                        intConf = false;
+                    }
+                    else newLines.push("ios_config \"" + curInt + "\" \"" + command + "\"")
+                }
+                console.log(command);
+            }
+            console.log(newLines);
+            document.getElementById("codeHere").value = newLines.join("\n");
+        }
+    </script>
+</head>
+
+<body>
+    <h1>IOS Configuration to TCL script Translator</h1>
+    <i style="font-size:0.8em">Coded by Thai Nguyen</i>
+    <p>Usage: Copy the IOS Configuration, including the context (for example "R2(config-if)# "), and then press
+        Translate to TCL.</p>
+    <textarea style="width:90%; height: 500px" id="codeHere">R2(config)# interface Serial 0/0/0
+R2(config-if)# description R2-->R1
+R2(config-if)# bandwidth 64
+R2(config-if)# ip address 10.1.102.2 255.255.255.248
+R2(config-if)# no shutdown
+R2(config-if)# exit
+R2(config)# interface Serial 0/0/1
+R2(config-if)# description R2-->R3
+R2(config-if)# clock rate 64000
+R2(config-if)# bandwidth 64
+R2(config-if)# ip address 10.1.203.2 255.255.255.248
+R2(config-if)# no shutdown
+R2(config-if)# exit</textarea><br>
+    <button onclick="translateNowASAS()">Translate to TCL</button>
+</body>
+
+</html>
