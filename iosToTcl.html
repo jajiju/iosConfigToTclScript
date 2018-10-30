@@ -45,6 +45,10 @@
                     if (command.includes("exit")) {
                         intConf = false;
                     }
+					else if (command.includes("interface")) {
+						curInt = command;
+						newLines.push("##");
+					}
                     else newLines.push("ios_config \"" + curInt + "\" \"" + command + "\"")
                 }
                 console.log(command);
